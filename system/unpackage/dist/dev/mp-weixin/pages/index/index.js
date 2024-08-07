@@ -1,5 +1,16 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
+function network() {
+  common_vendor.index.request({
+    url: "https://tea.qingnian8.com/tools/petShow",
+    data: {
+      limit: 10
+    }
+  }).then((res) => {
+    console.log(res);
+  });
+}
+network();
 const _sfc_main = {
   methods: {
     goToSelectPage() {

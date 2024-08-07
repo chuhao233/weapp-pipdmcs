@@ -1,133 +1,124 @@
 <template>
-  <view class="container">
-    <!-- 头部：搜索栏 -->
-    <view class="header">
-      <input type="text" placeholder="输入搜索内容" class="search-input" />
-    </view>
-    
-    <!-- 中间部分：表格和操作按钮 -->
-    <view class="main-content">
-      <table>
-        <tr>
-          <th>信息项</th>
-          <th>选择</th>
-          <th>撤销</th>
-        </tr>
-        <tr v-for="(item, index) in currentItems" :key="index">
-          <td>{{ item.info }}</td>
-          <td><button @click="selectItem(item)">选择</button></td>
-          <td><button @click="revokeItem(item)">撤销</button></td>
-        </tr>
-      </table>
-    </view>
-
-    <!-- 底部：翻页按钮 -->
-    <view class="footer">
-      <button @click="prevPage">上一页</button>
-      <button @click="nextPage">下一页</button>
+  <view>
+    <view class="uni-container">
+      <!-- 表格组件 -->
+      <uni-table 
+        ref="table" 
+        :loading="state.loading" 
+        border 
+        stripe 
+        type="selection" 
+        emptyText="暂无更多数据" 
+        @selection-change="selectionChange"
+      >
+        <!-- 表头 -->
+        <uni-tr>
+          <uni-th width="150" align="center">课程名称</uni-th>
+          <uni-th width="150" align="center">考试时间</uni-th>
+          <uni-th width="300" align="center">监考地点</uni-th>
+          <uni-th width="150" align="center">监考状态</uni-th>
+		  <uni-th width="150" align="center"></uni-th>
+        </uni-tr>
+        <!-- 表格行 -->
+        <uni-tr v-for="(item, index) in state.tableData" :key="index">
+          <uni-td>{{ item.date }}</uni-td>
+          <uni-td>{{ item.name }}</uni-td>
+          <uni-td align="center">{{ item.address }}</uni-td>
+		  <uni-id></uni-id>
+          <uni-td>
+            <view class="uni-group">
+              <button class="uni-button" size="mini" type="primary" @click="editItem(item)">修改</button>
+              <button class="uni-button" size="mini" type="warn" @click="deleteItem(item)">删除</button>
+            </view>
+          </uni-td>
+        </uni-tr>
+      </uni-table>
+      <!-- 分页组件 -->
+      <uni-pagination 
+        show-icon 
+        :page-size="state.pageSize" 
+        :current="state.pageCurrent" 
+        :total="state.total" 
+        @change="changePage"
+      />
+      <!-- 分页导航按钮 -->
+      <view class="pagination-controls">
+        <button class="uni-button" size="mini" type="default" @click="goToPage(state.pageCurrent - 1)" :disabled="state.pageCurrent <= 1">上一页</button>
+        <button class="uni-button" size="mini" type="default" @click="goToPage(state.pageCurrent + 1)" :disabled="state.pageCurrent >= Math.ceil(state.total / state.pageSize)">下一页</button>
+      </view>
     </view>
   </view>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
+import tableData from './tableData.js'; // 确保这个路径是正确的
 
-// 假设这是从服务器获取的总数据列表
-const items = ref([
-  // 模拟数据
-  { info: '信息1' },
-  { info: '信息2' },
-  // ...其他信息
-]);
+// 使用 reactive 创建响应式状态
+const state = reactive({
+  searchVal: '',
+  tableData: [],
+  pageSize: 10,
+  pageCurrent: 1,
+  total: 0,
+  loading: false,
+  selectedIndexs: []
+});
 
-// 当前页面显示的数据
-const currentPageItems = ref(items.value.slice(0, 8));
+// 组件挂载后获取数据
+onMounted(() => {
+  getData();
+});
 
-// 选择和撤销的逻辑
-function selectItem(item) {
-  // 添加到已选择列表或其他逻辑
-}
+// 定义获取数据的方法
+const getData = () => {
+  state.loading = true;
+  state.tableData = tableData; // 假设 tableData.js 导出了初始数据
+  state.total = state.tableData.length;
+  state.loading = false;
+};
 
-function revokeItem(item) {
-  // 从已选择列表中移除或其他逻辑
-}
+// 定义修改和删除课程项的方法
+const editItem = (/* item */) => {
+  // 编辑项的逻辑
+};
 
-// 翻页逻辑
-const pageSize = 8;
-let currentPage = 1;
+const deleteItem = (/* item */) => {
+  // 删除项的逻辑
+};
 
-function nextPage() {
-  if (items.value.length > currentPage * pageSize) {
-    currentPage++;
-    currentPageItems.value = items.value.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+// 定义分页变化的方法
+const changePage = (e) => {
+  state.pageCurrent = e.current;
+  // 这里可能需要重新请求数据或处理分页逻辑
+  getData(); // 重新获取数据
+};
+
+// 定义选择变化的方法
+const selectionChange = (e) => {
+  state.selectedIndexs = e.detail.index;
+  console.log('选中的索引:', state.selectedIndexs);
+};
+
+// 分页方法
+const goToPage = (newPage) => {
+  if (newPage > 0 && newPage <= Math.ceil(state.total / state.pageSize)) {
+    changePage({ current: newPage }); // 调用 changePage 更新页面
   }
-}
-
-function prevPage() {
-  if (currentPage > 1) {
-    currentPage--;
-    currentPageItems.value = items.value.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-  }
-}
+};
 </script>
 
-<style lang="scss" scoped>
-.container {
+<style scoped>
+.uni-group {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 20px;
 }
 
-.info-bar {
+.pagination-controls {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 20px;
+  justify-content: center;
+  margin-top: 10px;
 }
 
-.info-text {
-  flex: 1;
-  text-align: center;
-}
-
-.picker-item {
-  margin: 10px 0;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-.pagination-container {
-  position: fixed;  /* 固定位置 */
-  left: 0;         /* 左侧对齐 */
-  bottom: 0;       /* 底部对齐 */
-  width: 100%;     /* 宽度为100% */
-  display: flex;   /* 使用Flexbox布局 */
-  justify-content: center; /* 按钮水平居中 */
-  background-color: #fff; /* 背景颜色，根据需要调整 */
-  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
-  padding: 10px 0; /* 按钮与底部的距离 */
-}
-.search-input {
-  width: 100%;         /* 宽度占满其父容器 */
-  padding: 10px;       /* 内边距，让文字不会太靠近边框 */
-  border: 1px solid #ccc; /* 添加边框，颜色为灰色 */
-  border-radius: 4px;  /* 边框圆角 */
-  box-sizing: border-box; /* 边框计算在宽度内 */
-  outline: none;/* 点击时不显示轮廓 */
- }
-button {
-  padding: 5px 10px;
-  margin: 0 5px;
-  border: none;
-  border-radius: 4px;
-  background-color: #007aff;
-  color: white;
-  cursor: pointer;
-}
-
-button:active {
-  background-color: #005fcc;
-}
+/* 其他样式定义 */
 </style>
