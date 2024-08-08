@@ -1,15 +1,19 @@
 package com.pritaranyu.plsystem.pojo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 @Data
 public class Publish {
     private Integer invigilateId;
+    @JsonFormat(pattern = "YYYY-MM-DD")
     private String examDate;
     private Integer session;
     private Integer week;
     private String dayOfWeek;
+    @JsonFormat(pattern = "HH:mm")
     private String startTime;
+    @JsonFormat(pattern = "HH:mm")
     private String endTime;
     private String campus;
     private String building;

@@ -12,5 +12,9 @@ spring:
       location: "E:/ideatest/plsystem/uploads"
 
 
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
 
 
