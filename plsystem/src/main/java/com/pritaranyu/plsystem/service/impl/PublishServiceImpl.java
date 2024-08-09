@@ -23,4 +23,9 @@ public class PublishServiceImpl implements PublishService  {
 
     }
 
+    @Override
+    public void updateStatus() {
+        publishMapper.updateStatus();
+    }
+
 }

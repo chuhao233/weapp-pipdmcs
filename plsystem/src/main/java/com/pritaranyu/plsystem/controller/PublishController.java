@@ -16,7 +16,8 @@ public class PublishController {
     private PublishService publishService;
     @PostMapping("/publish")
     public Result<List<Publish>> publishmessage(){
-        List<Publish> pb = publishService.list();
+        publishService.updateStatus();  //修改监考信息状态
+        List<Publish> pb = publishService.list();  //将已发布的监考信息返回
         return Result.success(pb);
 
 

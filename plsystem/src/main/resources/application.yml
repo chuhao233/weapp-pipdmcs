@@ -15,6 +15,12 @@ spring:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
+  type-aliases-package: com.pritaranyu.plsystem
+
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+
 
 
 
