@@ -1001,6 +1001,7 @@
 | \|- createTime | string    | 非必须   |        | 创建时间                     |                                       |
 | \|- updateTime | string    | 非必须   |        | 更新时间                     |                                       |
 | \|- roleId     | number    | 非必须   | 0      | 角色id，区分普通用户和管理员 | 普通用户为0，管理员为1，高级管理员为2 |
+| \|- openId     | string    | 非必须   |        | 微信小程序用户唯一标识id     | 28位                                  |
 
 响应数据样例：
 
@@ -1017,7 +1018,8 @@
         "image": "https://pipdmcs.cn/2022-09-02-00-27-53B.jpg",
         "createTime": "2022-09-01T23:06:30",
     	"updateTime": "2022-09-02T00:29:04",
-        "roleId": 0
+        "roleId": 0,
+        "openId": "sj12e9h8suhda8ihd128he87usah"
       },
       {
         "userId": 2,
@@ -1025,7 +1027,8 @@
         "image": "https://pipdmcs.cn/2022-09-02-00-27-53B.jpg",
         "createTime": "2022-09-01T23:06:30",
     	"updateTime": "2022-09-02T00:29:04",
-        "roleId": 0
+        "roleId": 0,
+        "openId": "sj12e9h8slxda8ihd128he87usah"
       }
     ]
   }
@@ -1085,6 +1088,7 @@
 | \|- createTime | string    | 非必须   |        | 创建时间                     |                                       |
 | \|- updateTime | string    | 非必须   |        | 更新时间                     |                                       |
 | \|- roleId     | number    | 非必须   | 0      | 角色id，区分普通用户和管理员 | 普通用户为0，管理员为1，高级管理员为2 |
+| \|- openId     | string    | 非必须   |        | 微信小程序用户唯一标识id     | 28位                                  |
 
 响应数据样例：
 
@@ -1101,7 +1105,8 @@
         "image": "https://pipdmcs.cn/2022-09-02-00-27-53B.jpg",
         "createTime": "2022-09-01T23:06:30",
     	"updateTime": "2022-09-02T00:29:04",
-        "roleId": 0
+        "roleId": 0,
+        "openId": "sj12e9h8suhda8ihd128he87usah"
       },
       {
         "userId": 2,
@@ -1109,7 +1114,8 @@
         "image": "https://pipdmcs.cn/2022-09-02-00-27-53B.jpg",
         "createTime": "2022-09-01T23:06:30",
     	"updateTime": "2022-09-02T00:29:04",
-        "roleId": 0
+        "roleId": 0,
+        "openId": "sj12e9h8slxda8ihd128he87usah"
       }
     ]
   }
