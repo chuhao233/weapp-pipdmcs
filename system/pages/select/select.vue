@@ -1,5 +1,7 @@
 <template>
   <view>
+	  <uni-search-bar @confirm="search" :focus="true" v-model="searchValue" @blur="blur" @focus="focus" @input="input" @cancel="cancel" @change="change" @clear="clear">
+	  </uni-search-bar>
     <view class="uni-container">
       <!-- 表格组件 -->
       <uni-table 
@@ -13,26 +15,45 @@
       >
         <!-- 表头 -->
         <uni-tr>
-          <uni-th width="150" align="center">课程名称</uni-th>
-          <uni-th width="150" align="center">考试时间</uni-th>
-          <uni-th width="300" align="center">监考地点</uni-th>
-          <uni-th width="150" align="center">监考状态</uni-th>
-		  <uni-th width="150" align="center"></uni-th>
+          <uni-th width="35rpx" align="center">
+            <uni-checkbox 
+              :checked="isAllSelected" 
+              @change="toggleSelectAll"
+            ></uni-checkbox>
+          </uni-th>
+          <uni-th width="25rpx" align="center">课程名称</uni-th>
+          <uni-th width="65rpx" align="center">考试时间</uni-th>
+          <uni-th width="20rpx" align="center">监考地点</uni-th>
+          <uni-th width="20rpx" align="center">监考状态</uni-th>
         </uni-tr>
         <!-- 表格行 -->
         <uni-tr v-for="(item, index) in state.tableData" :key="index">
-          <uni-td>{{ item.date }}</uni-td>
-          <uni-td>{{ item.name }}</uni-td>
-          <uni-td align="center">{{ item.address }}</uni-td>
-		  <uni-id></uni-id>
           <uni-td>
-            <view class="uni-group">
-              <button class="uni-button" size="mini" type="primary" @click="editItem(item)">修改</button>
-              <button class="uni-button" size="mini" type="warn" @click="deleteItem(item)">删除</button>
-            </view>
+            <uni-checkbox 
+              :checked="isSelected(index)" 
+              @change="toggleSelection(index)"
+            ></uni-checkbox>
+          </uni-td>
+          <uni-td>{{ item.name }}</uni-td>
+          <uni-td>{{ item.date }}</uni-td>
+          <uni-td align="center">{{ item.address }}</uni-td>
+          <uni-td align="center">
+            <text :class="{ unselectable: isUnselectable(index) }">
+              {{ isUnselectable(index) ? '不可选择' : '可选' }}
+            </text>
           </uni-td>
         </uni-tr>
       </uni-table>
+      <!-- 模态框 -->
+      <transition name="modal">
+        <div v-if="state.showDialog" class="modal">
+          <div class="modal-content">
+            <p>你确定选择吗？</p>
+            <button @click="confirmSelection">确定</button>
+            <button @click="cancelSelection">取消</button>
+          </div>
+        </div>
+      </transition>
       <!-- 分页组件 -->
       <uni-pagination 
         show-icon 
@@ -51,74 +72,130 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import tableData from './tableData.js'; // 确保这个路径是正确的
 
 // 使用 reactive 创建响应式状态
 const state = reactive({
-  searchVal: '',
+  // ...其他状态
   tableData: [],
   pageSize: 10,
   pageCurrent: 1,
   total: 0,
   loading: false,
-  selectedIndexs: []
+  selectedIndices: [],
+  showDialog: false, // 模态框显示状态
+  requiredSelectionCount: 2, // 假设每个监考地点需要的监考人数为2
 });
 
 // 组件挂载后获取数据
 onMounted(() => {
-  getData();
+  state.tableData = tableData;
+  state.total = state.tableData.length;
 });
 
-// 定义获取数据的方法
-const getData = () => {
-  state.loading = true;
-  state.tableData = tableData; // 假设 tableData.js 导出了初始数据
-  state.total = state.tableData.length;
-  state.loading = false;
-};
-
-// 定义修改和删除课程项的方法
-const editItem = (/* item */) => {
-  // 编辑项的逻辑
-};
-
-const deleteItem = (/* item */) => {
-  // 删除项的逻辑
-};
-
-// 定义分页变化的方法
-const changePage = (e) => {
-  state.pageCurrent = e.current;
-  // 这里可能需要重新请求数据或处理分页逻辑
-  getData(); // 重新获取数据
-};
-
 // 定义选择变化的方法
-const selectionChange = (e) => {
-  state.selectedIndexs = e.detail.index;
-  console.log('选中的索引:', state.selectedIndexs);
+const selectionChange = (selectedIndex) => {
+  toggleSelection(selectedIndex);
+};
+
+// 切换选择状态
+const toggleSelection = (index) => {
+  const isSelected = state.selectedIndices.includes(index);
+  if (isSelected) {
+    state.selectedIndices.splice(state.selectedIndices.indexOf(index), 1);
+  } else {
+    state.selectedIndices.push(index);
+  }
+  if (state.selectedIndices.length > 0) {
+    state.showDialog = true;
+  } else {
+    state.showDialog = false;
+  }
+};
+
+// 弹出框确认选择
+const confirmSelection = () => {
+  // 这里可以添加确认选择后的逻辑
+  state.showDialog = false;
+};
+
+// 弹出框取消选择
+const cancelSelection = () => {
+  state.selectedIndices = [];
+  state.showDialog = false;
+};
+
+// 检查是否全选
+const isAllSelected = ref(false);
+
+// 切换全选状态
+const toggleSelectAll = () => {
+  isAllSelected.value = !isAllSelected.value;
+  state.selectedIndices = isAllSelected.value ? state.tableData.map((_, index) => index) : [];
+  if (isAllSelected.value) {
+    state.showDialog = true;
+  } else {
+    state.showDialog = false;
+  }
+};
+
+// 检查是否选中
+const isSelected = (index) => {
+  return state.selectedIndices.includes(index);
+};
+
+// 检查是否不可选择
+const isUnselectable = (index) => {
+  return isSelected(index) && state.selectedIndices.length >= state.requiredSelectionCount;
 };
 
 // 分页方法
+const changePage = (e) => {
+  state.pageCurrent = e.current;
+};
+
 const goToPage = (newPage) => {
   if (newPage > 0 && newPage <= Math.ceil(state.total / state.pageSize)) {
-    changePage({ current: newPage }); // 调用 changePage 更新页面
+    state.pageCurrent = newPage;
   }
 };
+
 </script>
 
 <style scoped>
-.uni-group {
+/* 模态框动画 */
+.modal-enter-active, .modal-leave-active {
+  transition: opacity 0.5s;
+}
+.modal-enter, .modal-leave-to {
+  opacity: 0;
+}
+
+/* 模态框样式 */
+.modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
+  justify-content: center;
   align-items: center;
 }
 
-.pagination-controls {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
 }
 
-/* 其他样式定义 */
+/* 表格和其他组件样式 */
+/* ...你的其他样式 */
+.unselectable {
+  color: red;
+  cursor: not-allowed;
+}
 </style>

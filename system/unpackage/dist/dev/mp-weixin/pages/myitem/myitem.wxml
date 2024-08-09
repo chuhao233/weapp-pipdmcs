@@ -1,1 +1,1 @@
-<view class=""></view>
+<view class="container data-v-da3d5191"><view class="exam-list data-v-da3d5191"><view wx:for="{{a}}" wx:for-item="exam" wx:key="c" class="exam-item data-v-da3d5191" bindtap="{{exam.d}}"><text class="exam-time data-v-da3d5191">{{exam.a}}</text><text class="exam-location data-v-da3d5191">{{exam.b}}</text></view></view></view>

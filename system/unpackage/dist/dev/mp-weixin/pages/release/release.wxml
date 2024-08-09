@@ -1,1 +1,1 @@
-<view class=""></view>
+<view class="container"><text class="title">上传监考信息</text><button class="upload-button" bindtap="{{a}}">选择文件</button></view>

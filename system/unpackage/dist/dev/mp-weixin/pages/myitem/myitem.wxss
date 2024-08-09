@@ -1,0 +1,19 @@
+
+.container.data-v-da3d5191 {
+  padding: 20px;
+}
+.exam-list.data-v-da3d5191 {
+  /* 你的样式定义 */
+}
+.exam-item.data-v-da3d5191 {
+  margin-bottom: 10px;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+.exam-time.data-v-da3d5191 {
+  /* 时间样式定义 */
+}
+.exam-location.data-v-da3d5191 {
+  /* 地点样式定义 */
+}

@@ -4,10 +4,14 @@ function network() {
   common_vendor.index.request({
     url: "https://tea.qingnian8.com/tools/petShow",
     data: {
-      limit: 10
+      size: 10
+    },
+    header: {
+      "access-key": "lang110512"
     }
   }).then((res) => {
-    console.log(res);
+    console.log(res.data.data);
+    pets.value = res.data.data;
   });
 }
 network();
